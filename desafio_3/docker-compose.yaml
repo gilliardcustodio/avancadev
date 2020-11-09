@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+  rabbit:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - ./rabbit/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./rabbit/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+  
+  microA:
+    image: "gilliarcustodio/microservico-avancadev-a:latest"
+    ports:
+      - "9090:9090"
+  microB:
+    image: "gilliarcustodio/microservico-avancadev-b:latest"
+    restart: on-failure 
+    depends_on:
+       - "rabbit"
+  microC:
+    image: "gilliarcustodio/microservico-avancadev-c:latest"
+    ports:
+      - "9092:9092"

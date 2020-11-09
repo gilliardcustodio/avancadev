@@ -1,0 +1,92 @@
+{
+    "users": [
+      {
+        "name": "testuser",
+        "password_hash": "txn+nsYVkAaIMvDsH8Fsyb3RWMCMWihRUVCk/wICL1NBKKvz",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator"
+      }
+        ],
+    "vhosts": [
+      {
+        "name": "/"
+      }
+    ],
+    "permissions": [
+      {
+        "user": "testuser",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      } 
+      ],
+    "parameters": [],
+    "policies": [],
+    "queues": [
+        {
+            "name":"orders",
+            "vhost":"/", 
+            "durable":true,
+            "auto_delete":false,
+            "arguments":{
+                "x-dead-letter-exchange": "dlx"
+                }
+        },
+        {
+            "name":"orders_dlq",
+            "vhost":"/", 
+            "durable":true,
+            "auto_delete":false,
+            "arguments": {
+                "x-dead-letter-exchange": "orders_ex",
+                "x-message-ttl": 3000
+                }
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "orders_ex", 
+            "vhost": "/", 
+            "type": "direct", 
+            "durable": true, 
+            "auto_delete": false, 
+            "internal": false,
+            "arguments": {
+                
+             }
+        },
+        {
+            "name": "dlx", 
+            "vhost": "/", 
+            "type": "direct", 
+            "durable": true, 
+            "auto_delete": false, 
+            "internal": false, 
+            "arguments": {
+
+                }
+        }
+
+    ],
+    "bindings": [
+
+        {
+            "source": "orders_ex",
+            "vhost": "/",
+            "destination": "orders",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+          },
+          {
+            "source": "orders_dlq",
+            "vhost": "/",
+            "destination": "dlx",
+            "destination_type": "exchange",
+            "routing_key": "",
+            "arguments": {}
+          }
+         
+    ]
+  }
